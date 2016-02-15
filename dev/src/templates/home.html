@@ -1,0 +1,239 @@
+<div class="view view-form" ng-controller="FormController as vm">
+
+    <header>
+        <h1 class="logo">FantasticBoxCo</h1>
+    </header>
+
+    <main>
+
+        <div class="container">
+
+            <aside>
+
+                <ul class="progress">
+                    <li>
+                        <a href="" ng-click="vm.go(0)" class="step step-1" ng-class="{'is-active': vm.step == 0}">
+                            <div class="step-number">1</div>
+                            <h3 class="step-heading">Dimensions &amp; Quantity</h3>
+                            <dl>
+                                <dt>Width:</dt>
+                                <dd>{{vm.box.dimensions.width}}m</dd>
+                                <dt>Height:</dt>
+                                <dd>{{vm.box.dimensions.height}}m</dd>
+                                <dt>Length:</dt>
+                                <dd>{{vm.box.dimensions.length}}m</dd>
+                                <dt>Quantity:</dt>
+                                <dd>{{vm.quantity}}</dd>
+                            </dl>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" ng-click="vm.go(1)" class="step step-2" ng-class="{'is-active': vm.step == 1}">
+                            <div class="step-number">2</div>
+                            <h3 class="step-heading">Cardboard Grade</h3>
+                            <span class="step-value">{{vm.cardboardGradeRefObj[vm.box.cardboardGrade].text}}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" ng-click="vm.go(2)" class="step step-3" ng-class="{'is-active': vm.step == 2}">
+                            <div class="step-number">3</div>
+                            <h3 class="step-heading">Print Quality</h3>
+                            <span class="step-value">{{vm.printQualityRefObj[vm.box.printQuality].text}}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" ng-click="vm.go(3)" class="step step-4" ng-class="{'is-active': vm.step == 3}">
+                            <div class="step-number">4</div>
+                            <h3 class="step-heading">Optional Extras</h3>
+                            <span class="step-value">
+                                <span ng-repeat="(key, value) in vm.box.extras" ng-if="value">{{vm.extrasRefObj[key].text}}<span ng-if="!$last">, </span></span>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#total-cost" class="step step-total-cost">
+                            <h3 class="step-total-cost-heading">Total Cost</h3>
+                            <div class="step-total-cost-value">{{vm.total(vm.quantity, vm.box) | currency: '£'}}</div>
+                        </a>
+                    </li>
+                </ul>
+
+            </aside>
+
+            <section>
+
+                <div id="step-1" class="content-step" ng-show="vm.step == 0">
+
+                    <h2>Step 1 - Dimensions &amp; Quantity</h2>
+                    <p class="intro">Enter the width, height, length and quantity of the box(es) you require.</p>
+
+                    <div class="form-row">
+                        <label for="width">Width:</label>
+                        <input type="number" name="width" id="width" value="0" min="0" step="0.01" ng-model="vm.box.dimensions.width" ng-change="vm.validateDimensions()">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="height">Height:</label>
+                        <input type="number" name="height" id="height" value="0" min="0" step="0.01" ng-model="vm.box.dimensions.height" ng-change="vm.validateDimensions()">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="length">Length:</label>
+                        <input type="number" name="length" id="length" value="0" min="0" step="0.01" ng-model="vm.box.dimensions.length" ng-change="vm.validateDimensions()">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" name="quantity" id="quantity" value="0" min="0" step="1" ng-model="vm.quantity">
+                    </div>
+
+                    <div class="form-actions">
+                        <!--// Add and Remove disabled attribute based on validation of fields -->
+                        <button type="button" class="btn btn-primary btn-next" ng-click="vm.next()">Next</buttton>
+                    </div>
+
+                </div>
+
+                <div id="step-2" class="content-step" ng-show="vm.step == 1">
+                    
+                    <h2>Step 2 - Cardboard Grade</h2>
+                    <p class="intro"><strong>FantasticBoxCo</strong> offer a variety of grades of cardboard, each altering the price per m<sup>2</sup>:</p>
+                    <p ng-show="vm.tooLarge" class="warning">C Grade not available for boxes larger than 2m<sup>2</sup></p>
+
+                    <ol class="btn-radios-list">
+                        <li>
+                            <label>
+                                <input type="radio" name="cardboard-grade" value="A" ng-model="vm.box.cardboardGrade" ng-change="vm.validateCardboardGrade()">
+                                <span class="btn btn-radio">A Grade<br>&pound;0.20 m<sup>2</sup></span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="cardboard-grade" value="B" ng-model="vm.box.cardboardGrade" ng-change="vm.validateCardboardGrade()">
+                                <span class="btn btn-radio">B Grade<br>&pound;0.10 m<sup>2</sup></span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="cardboard-grade" value="C" ng-model="vm.box.cardboardGrade" ng-disabled="vm.tooLarge" ng-change="vm.validateCardboardGrade()">
+                                    <span class="btn btn-radio">C Grade<br>&pound;0.05 m<sup>2</sup></span>
+                            </label>
+                        </li>
+                    </ol>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-back" ng-click="vm.prev()">back</buttton>
+                        <button type="button" class="btn btn-primary btn-next" ng-click="vm.next()">Next</buttton>
+                    </div>
+
+                </div>
+
+                <div id="step-3" class="content-step" ng-show="vm.step == 2">
+                    
+                    <h2>Step 3 - Print Quality</h2>
+                    <p class="intro">A variety of printing options are available for any branding / logos which are required:</p>
+
+                    <ol class="btn-radios-list">
+                        <li>
+                            <label>
+                                <input type="radio" name="print-quality" value="3-color" ng-model="vm.box.printQuality">
+                                <span class="btn btn-radio">3 colours<br>&pound;0.20 m<sup>2</sup></span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="print-quality" value="2-color" ng-model="vm.box.printQuality">
+                                <span class="btn btn-radio">2 colours<br>&pound;0.10 m<sup>2</sup></span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="print-quality" value="black-only" ng-model="vm.box.printQuality">
+                                <span class="btn btn-radio">Black only<br>&pound;0.05 m<sup>2</sup></span>
+                            </label>
+                            </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="print-quality" value="no-printing" ng-model="vm.box.printQuality">
+                                <span class="btn btn-radio">No printing<br>&pound;0.00</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="print-quality" value="FantasticBoxCo-branding" ng-model="vm.box.printQuality">
+                                <span class="btn btn-radio"><strong>FantasticBoxCo</strong> branding<br>5% discount on total price</span>
+                            </label>
+                        </li>
+                    </ol>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-back" ng-click="vm.prev()">back</buttton>
+                        <button type="button" class="btn btn-primary btn-next" ng-click="vm.next()">Next</buttton>
+                    </div>
+
+                </div>
+
+                <div id="step-4" class="content-step" ng-show="vm.step == 3">
+                    <h2>Step 4 - Optional Extras</h2>
+                    <p ng-show="vm.unReinforcable" class="warning">Reinforced bottom only available with ‘A Grade’ cardboard</p>
+
+                    <ol class="btn-radios-list">
+                        <li>
+                            <label>
+                                <input type="checkbox" name="optional-extras" value="handles" ng-model="vm.box.extras.handles">
+                                <span class="btn btn-radio">Handles<br>&pound;0.10 per box</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="checkbox" name="optional-extras" value="reinforced-bottom" ng-model="vm.box.extras.reinforcedBottom" ng-disabled="vm.unReinforcable">
+                                <span class="btn btn-radio">Reinforced bottom<br>&pound;0.05 per box</span>
+                            </label>
+                        </li>
+                    </ol>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-back" ng-click="vm.prev()">back</buttton>
+                        <button type="button" class="btn btn-primary btn-next" ng-click="vm.next()">Finish</buttton>
+                    </div>
+
+                </div>
+
+
+                <div id="total-cost" class="content-step" ng-show="vm.step == 4">
+                    <h2>Total Cost</h2>
+
+                    <dl class="breakdown">
+                        <dt>Dimensions &amp; Quantity:</dt>
+
+                        <dd>{{vm.quantity}} &times; {{vm.box.dimensions.width}}(W)&times;{{vm.box.dimensions.height}}(H)&times;{{vm.box.dimensions.length}}(L)</dd>
+                        <dd ng-show="vm.surfaceArea(vm.box.dimensions) == 0" class="warning"><a href="" ng-click="vm.go(0)">Width, Height or Length missing</a></dd>
+                        <dd ng-show="vm.quantity == 0" class="warning"><a href="" ng-click="vm.go(0)">Quantity missing</a></dd>
+                        
+                        <dt>Cardboard Grade:</dt>
+                        <dd>{{vm.cardboardGradeRefObj[vm.box.cardboardGrade].text}}</dd>
+                        <dd ng-show="vm.box.cardboardGrade == ''" class="warning"><a href="" ng-click="vm.go(1)">Cardboard grade missing</a></dd>
+
+                        <dt>Print Quality:</dt>
+                        <dd>{{vm.printQualityRefObj[vm.box.printQuality].text}}</dd>
+                        <dd ng-show="vm.box.printQuality == ''" class="warning"><a href="" ng-click="vm.go(2)">Print quality missing</a></dd>
+
+                        <dt ng-show="vm.validateExtras()">Optional Extras:</dt>
+                        <dd ng-show="vm.validateExtras()">
+                            <ol>
+                                <li ng-repeat="(key, value) in vm.box.extras" ng-if="value">{{vm.extrasRefObj[key].text}}</li>
+                            </ol>
+                        </dd>
+
+                        <dt>Total Cost:</dt>
+                        <dd>{{vm.total(vm.quantity, vm.box) | currency: '£'}}</dd>
+                    </dl>
+                </div>
+
+            </section>
+        
+        </div>
+
+    </main>
+
+</div>
